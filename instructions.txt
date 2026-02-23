@@ -1,0 +1,87 @@
+create a node js backend that will receive the signals from the tradingview webhook
+
+and our mission is to provide the portoflio mangement analytics dashboard backend,
+
+webhook format:: 
+
+Pinescript function:
+makePayload(_symbol, _side, _tf, _type, _price, _closeonflip) =>
+    "{"
+    +"\"symbol\":"    + jsonQuote(_symbol)  + "," +"\"side\":"      + jsonQuote(_side)                     + "," +"\"timeframe\":" + jsonQuote(_tf)                       + "," +"\"type\":"      + jsonQuote(_type)                     + "," +"\"price\":"     + str.tostring(_price, format.mintick) + "," +"\"closeonflip\":" + str.tostring(_closeonflip)         + "," +"\"timestamp\":" + jsonQuote(str.format_time(timenow, "yyyy-MM-dd'T'HH:mm:ssZ", "UTC"))  +"}"
+
+
+this payload is being sent in alert function via webhook to backend, 
+
+__________________________________
+
+
+Deliverabels::
+
+backend will recieve the data about thesymobl, timeframe, type: bullish/bearish, price: entry/exit price, closeOnFlip: true/false(you can ignore this value), timestamp: alert time 
+
+
+backend architechture:: 
+batches are created depending upon the pairs groups created, 
+
+like we can create a new batch
+delete a batch
+and edit new batch
+editing new batch means adding or removing pairs from the batch
+
+so, we can have multiple batches
+
+the admin will name the batches, and can edit the names and pairs include and  capital.
+
+
+the received data of alert is being stored in the mysql database with schema structured including:: symobl, entry price, exit price, entry time, exit time, timeframe, side 
+
+so, the entry/ exit alerts are stored in the same row for 1 trade, so the exit will be matched back to entry of the symbol that is yet not exited.
+
+workflow:
+
+as the alert comes it will be it's stored in the mysql db.
+
+
+the admin can create new batch of pairs, with capital and name and starting date by default all history,
+
+like
+Batch_1
+symobls: [btc,eth,...]
+startime: 
+capital: 
+
+
+the capital size will be 100000 by default for each batch 
+
+so, the backend will have following end points, 
+
+1 : GetBatches
+   > returns data of each batch and avilable settings on it
+
+
+Showing analytics for bacthids,
+
+On the main dashboard we will show the graphs different for each batch.
+for each batch we calculate: 
+
+pnl, drawdown, available_capital, change_percentage logged with each trade. 
+so, we wil have to update the batch incase a new trade comes in and the batch also includes that symobl, 
+
+
+capital will increase if the change_percentage is positive else decrease as the alert is recieved the derived variables are calculated based on the data.
+
+
+
+this will allow us to show the analytics for each batch like 
+
+we can show the growth of capital by trades, commulative/absolute
+can show the trades per day chart 
+can show the growth in capital per day cummlative/absolute
+cummulative no of trades since starting time graph, 
+
+
+
+
+make sure to add the endpoints required to control and show the required data on the fronted. so, our mission of creating fully advanced dashboard for pnl tracking across different batches should be accomplished fully
+
+
