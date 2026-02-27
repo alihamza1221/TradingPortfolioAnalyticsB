@@ -42,6 +42,12 @@ async function processSignal(payload) {
     // Decide: EXIT if explicit exit OR (auto-detect: open trade exists and not explicit entry)
     const shouldExit = openTrades.length > 0 && (isExplicitExit || !isExplicitEntry);
 
+    // Reject exit signals that have no matching open position
+    if (isExplicitExit && openTrades.length === 0) {
+        console.log(`[Trade] Ignoring exit signal for ${symbol} — no open position found`);
+        return { action: 'ignored', trade: { symbol, reason: 'No open position to close' } };
+    }
+
     if (shouldExit) {
         // -------- EXIT --------
         const openTrade = openTrades[0];

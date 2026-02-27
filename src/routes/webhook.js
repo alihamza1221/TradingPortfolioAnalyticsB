@@ -84,6 +84,15 @@ router.post('/', async (req, res) => {
 
         const result = await processSignal(payload);
 
+        if (result.action === 'ignored') {
+            console.log(`[Webhook] Ignored: ${result.trade.reason} for ${result.trade.symbol}`);
+            return res.status(200).json({
+                success: true,
+                action: 'ignored',
+                reason: result.trade.reason,
+            });
+        }
+
         console.log(`[Webhook] Processed as ${result.action} for trade #${result.trade.id}`);
 
         return res.status(200).json({
